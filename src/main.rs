@@ -15,13 +15,8 @@ impl Board{
             print!("\n");
         }
     }
-    fn place_a_sign(&mut self, option : Option<usize>, sign : char){
-        match option{
-            Some(i) => {
-                self.board[i] = sign;
-            },
-            None => println!("None"),
-        }
+    fn place_a_sign(&mut self,index: usize, sign : char){
+        self.board[index-1] = sign;
     }
     fn new()-> Board{
         Board{
@@ -49,12 +44,17 @@ fn main() {
             .read_line(&mut cell_number)
             .expect("Faild to read the input.");
 
-        let index : usize = cell_number.trim().parse().expect("Faild to convert cell_number(Stirng) to index(usize)");
+        let index : usize;
 
-        b.place_a_sign(Some(index), '\u{2716}');
-        //read the input for cell_number
-        //convert it to int index
-        //assign a char to index
+        match cell_number.trim().parse(){
+            Ok(i) => index = i,
+            Err(_) => {
+                println!("Enter a valid number!");
+                continue;
+            }
+        }
+
+        b.place_a_sign(index, 'X');
     }
     
 }
