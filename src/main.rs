@@ -16,7 +16,7 @@ impl Board {
         }
     }
     fn place_a_sign(&mut self, index: usize, sign: char) {
-        self.board[index - 1] = sign;
+        self.board[index] = sign;
     }
     fn new() -> Board {
         Board {
@@ -49,8 +49,10 @@ fn main() {
 
         let index: usize;
 
-        match cell_number.trim().parse() {
-            Ok(i) => index = i,
+        match cell_number.trim().parse::<usize>() {
+            Ok(i) => {
+                index = i - 1;
+            }
             Err(_) => {
                 println!("Enter a valid number!");
                 continue;
@@ -59,12 +61,22 @@ fn main() {
 
         match sign {
             'X' => {
-                b.place_a_sign(index, sign);
-                sign = 'O';
+                if b.board[index] == '\u{25A2}' {
+                    b.place_a_sign(index, sign);
+                    sign = 'O';
+                } else {
+                    println!("This possition is already taken! Try another one!");
+                    continue;
+                }
             }
             'O' => {
-                b.place_a_sign(index, sign);
-                sign = 'X';
+                if b.board[index] == '\u{25A2}' {
+                    b.place_a_sign(index, sign);
+                    sign = 'X';
+                } else {
+                    println!("This possition is already taken! Try another one!");
+                    continue;
+                }
             }
             _ => panic!("How de fuck you managed to break it?"),
         }
