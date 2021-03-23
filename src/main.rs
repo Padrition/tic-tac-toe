@@ -8,14 +8,26 @@ struct Cell {
     y: usize,
 }
 
+enum ErrCoordinates{
+    InvalidSub,
+}
+
 impl Cell {
     fn new() -> Cell {
         Cell { x: 0, y: 0 }
     }
-    fn index_to_coordinates(&mut self, i: usize) {
-        let i : usize = i - 1;
-        self.x = i / 3;
-        self.y = i % 3;
+    fn index_to_coordinates(&mut self, i: usize)->Result<(), ErrCoordinates>{
+        let i = i.checked_sub(1);
+        match i{
+            Some(u) =>{
+                self.x = u / 3;
+                self.y = u % 3;
+                Ok(())
+            },
+            None =>{
+                Err(ErrCoordinates::InvalidSub)
+            }
+        }
     }
 }
 
@@ -63,7 +75,13 @@ fn main() {
 
         match cell_index.trim().parse::<usize>() {
             Ok(i) => {
-                cell.index_to_coordinates(i);
+                match cell.index_to_coordinates(i){
+                    Ok(a) => a,
+                    Err(ErrCoordinates::InvalidSub) => {
+                        println!("You've tried to reach unexisting cell! Try one more time but with a valid number!");
+                        continue;
+                    }
+                }
             }
             Err(_) => {
                 eprintln!("Enter a valid number!");
@@ -93,6 +111,7 @@ fn main() {
             _ => panic!("How de fuck you managed to break it?"),
         }
     }
-    //TODO: Write a win tie logic and do a check after each loop iteration
+    //TODO: Handle the out of bounds exeption
+    //Write a win tie logic and do a check after each loop iteration
     //rewrite a vector to be a two dimentional
 }
