@@ -1,26 +1,24 @@
 use std::io;
 
 struct Board {
-    board: Vec<char>,
+    board: Vec<Vec<char>>,
 }
 
 impl Board {
     fn print_a_board(&self) {
-        let mut index = 0;
-        for _ in 0..3 {
-            for _ in 0..3 {
-                print!("{:2}", self.board[index]);
-                index += 1;
+        for i in 0..3 {
+            for j in 0..3 {
+                print!("{:2}", self.board[i][j]);
             }
             println!();
         }
     }
-    fn place_a_sign(&mut self, index: usize, sign: char) {
-        self.board[index] = sign;
+    fn place_a_sign(&mut self, row: usize,column: usize, sign: char) {
+        self.board[row][column] = sign;
     }
     fn new() -> Board {
         Board {
-            board: vec!['\u{25A2}'; 9],
+            board: vec![vec!['\u{25A2}'; 3];3],
         }
     }
 }
@@ -39,7 +37,7 @@ fn main() {
     loop {
         b.print_a_board();
 
-        println!("Enter the number of a cell you want to sign:");
+        println!("Enter the number of a row you want to sign:");
 
         let mut cell_number = String::new();
 
@@ -47,11 +45,30 @@ fn main() {
             .read_line(&mut cell_number)
             .expect("Faild to read the input.");
 
-        let index: usize;
+        let row: usize;
 
         match cell_number.trim().parse::<usize>() {
             Ok(i) => {
-                index = i - 1;
+                row = i;
+            }
+            Err(_) => {
+                println!("Enter a valid number!");
+                continue;
+            }
+        }
+        println!("Enter the number of a column you want to sign:");
+
+        let mut cell_number = String::new();
+
+        io::stdin()
+            .read_line(&mut cell_number)
+            .expect("Faild to read the input.");
+
+        let column: usize;
+
+        match cell_number.trim().parse::<usize>() {
+            Ok(i) => {
+                column = i;
             }
             Err(_) => {
                 println!("Enter a valid number!");
@@ -61,8 +78,8 @@ fn main() {
 
         match sign {
             'X' => {
-                if b.board[index] == '\u{25A2}' {
-                    b.place_a_sign(index, sign);
+                if b.board[row][column] == '\u{25A2}' {
+                    b.place_a_sign(row, column, sign);
                     sign = 'O';
                 } else {
                     println!("This possition is already taken! Try another one!");
@@ -70,8 +87,8 @@ fn main() {
                 }
             }
             'O' => {
-                if b.board[index] == '\u{25A2}' {
-                    b.place_a_sign(index, sign);
+                if b.board[row][column] == '\u{25A2}' {
+                    b.place_a_sign(row, column, sign);
                     sign = 'X';
                 } else {
                     println!("This possition is already taken! Try another one!");
@@ -81,4 +98,6 @@ fn main() {
             _ => panic!("How de fuck you managed to break it?"),
         }
     }
+    //TODO: Write a win tie logic and do a check after each loop iteration
+    //rewrite a vector to be a two dimentional 
 }
