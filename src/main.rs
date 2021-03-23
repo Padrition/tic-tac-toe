@@ -43,12 +43,17 @@ impl Board {
             println!();
         }
     }
-    fn place_a_sign(&mut self, cell: &mut Cell, sign: char) -> Result<(), ErrBoard> {
+    fn place_a_sign(&mut self, cell: &mut Cell, sign: &mut char) -> Result<(), ErrBoard> {
         match self.board.get(cell.x) {
             Some(_) => match self.board[cell.x].get(cell.y) {
                 Some(_) => {
                     if self.board[cell.x][cell.y] == '\u{25A2}' {
-                        self.board[cell.x][cell.y] = sign;
+                        self.board[cell.x][cell.y] = *sign;
+                        if *sign == 'X' {
+                            *sign = 'O';
+                        } else {
+                            *sign = 'X';
+                        }
                     } else {
                         return Err(ErrBoard::PossitionTaken);
                     }
@@ -104,11 +109,8 @@ fn main() {
         }
 
         match sign {
-            'X' => match b.place_a_sign(&mut cell, sign) {
-                Ok(a) => {
-                    sign = 'O';
-                    a
-                }
+            'X' => match b.place_a_sign(&mut cell, &mut sign) {
+                Ok(a) => a,
                 Err(ErrBoard::PossitionTaken) => {
                     eprintln!("This possition is already taken! Try another one!");
                     continue;
@@ -118,11 +120,8 @@ fn main() {
                     continue;
                 }
             },
-            'O' => match b.place_a_sign(&mut cell, sign) {
-                Ok(a) => {
-                    sign = 'X';
-                    a
-                }
+            'O' => match b.place_a_sign(&mut cell, &mut sign) {
+                Ok(a) => a,
                 Err(ErrBoard::PossitionTaken) => {
                     eprintln!("This possition is already taken! Try another one!");
                     continue;
