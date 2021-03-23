@@ -8,25 +8,28 @@ struct Cell {
     y: usize,
 }
 
-enum ErrCoordinates{
+enum ErrCoordinates {
     InvalidSub,
+}
+
+enum ErrBoard {
+    OutOfBounds,
+    PossitionTaken,
 }
 
 impl Cell {
     fn new() -> Cell {
         Cell { x: 0, y: 0 }
     }
-    fn index_to_coordinates(&mut self, i: usize)->Result<(), ErrCoordinates>{
+    fn index_to_coordinates(&mut self, i: usize) -> Result<(), ErrCoordinates> {
         let i = i.checked_sub(1);
-        match i{
-            Some(u) =>{
+        match i {
+            Some(u) => {
                 self.x = u / 3;
                 self.y = u % 3;
                 Ok(())
-            },
-            None =>{
-                Err(ErrCoordinates::InvalidSub)
             }
+            None => Err(ErrCoordinates::InvalidSub),
         }
     }
 }
@@ -40,8 +43,21 @@ impl Board {
             println!();
         }
     }
-    fn place_a_sign(&mut self, cell: &mut Cell, sign: char) {
-        self.board[cell.x][cell.y] = sign;
+    fn place_a_sign(&mut self, cell: &mut Cell, sign: char) -> Result<(), ErrBoard> {
+        match self.board.get(cell.x) {
+            Some(_) => match self.board[cell.x].get(cell.y) {
+                Some(_) => {
+                    if self.board[cell.x][cell.y] == '\u{25A2}' {
+                        self.board[cell.x][cell.y] = sign;
+                    } else {
+                        return Err(ErrBoard::PossitionTaken);
+                    }
+                    Ok(())
+                }
+                None => Err(ErrBoard::OutOfBounds),
+            },
+            None => Err(ErrBoard::OutOfBounds),
+        }
     }
     fn new() -> Board {
         Board {
@@ -65,7 +81,7 @@ fn main() {
     loop {
         b.print_a_board();
 
-        println!("Enter a cell number:");
+        eprintln!("Enter a cell number:");
 
         let mut cell_index = String::new();
 
@@ -74,15 +90,13 @@ fn main() {
             .expect("Error reading the input!");
 
         match cell_index.trim().parse::<usize>() {
-            Ok(i) => {
-                match cell.index_to_coordinates(i){
-                    Ok(a) => a,
-                    Err(ErrCoordinates::InvalidSub) => {
-                        println!("You've tried to reach unexisting cell! Try one more time but with a valid number!");
-                        continue;
-                    }
+            Ok(i) => match cell.index_to_coordinates(i) {
+                Ok(a) => a,
+                Err(ErrCoordinates::InvalidSub) => {
+                    eprintln!("Enter a valid number!");
+                    continue;
                 }
-            }
+            },
             Err(_) => {
                 eprintln!("Enter a valid number!");
                 continue;
@@ -90,28 +104,35 @@ fn main() {
         }
 
         match sign {
-            'X' => {
-                if b.board[cell.x][cell.y] == '\u{25A2}' {
-                    b.place_a_sign(&mut cell, sign);
+            'X' => match b.place_a_sign(&mut cell, sign) {
+                Ok(a) => {
                     sign = 'O';
-                } else {
-                    println!("This possition is already taken! Try another one!");
+                    a
+                }
+                Err(ErrBoard::PossitionTaken) => {
+                    eprintln!("This possition is already taken! Try another one!");
                     continue;
                 }
-            }
-            'O' => {
-                if b.board[cell.x][cell.y] == '\u{25A2}' {
-                    b.place_a_sign(&mut cell, sign);
+                Err(ErrBoard::OutOfBounds) => {
+                    eprintln!("Enter a valid number!");
+                    continue;
+                }
+            },
+            'O' => match b.place_a_sign(&mut cell, sign) {
+                Ok(a) => {
                     sign = 'X';
-                } else {
-                    println!("This possition is already taken! Try another one!");
+                    a
+                }
+                Err(ErrBoard::PossitionTaken) => {
+                    eprintln!("This possition is already taken! Try another one!");
                     continue;
                 }
-            }
+                Err(ErrBoard::OutOfBounds) => {
+                    eprintln!("Enter a valid number!");
+                    continue;
+                }
+            },
             _ => panic!("How de fuck you managed to break it?"),
         }
     }
-    //TODO: Handle the out of bounds exeption
-    //Write a win tie logic and do a check after each loop iteration
-    //rewrite a vector to be a two dimentional
 }
