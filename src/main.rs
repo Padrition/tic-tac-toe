@@ -69,18 +69,13 @@ impl Board {
             None => Err(ErrBoard::OutOfBounds),
         }
     }
-    fn check_for_end(&mut self){
-        for row in self.board.iter(){
-            if row.iter().any(|&i| i == '\u{25A2}'){
-                break;
+    fn check_for_win(&mut self) -> Option<char> {
+        for row in self.board.iter() {
+            if !row.iter().any(|i| *i == '\u{25A2}') && row.iter().all(|&x| x == row[0]) {
+                return Some(row[0]);
             }
-            for i in 0..row.len(){
-                if row[0] != row[i]{
-                    break;
-                }
-            }
-            println!("One value in a row!");
         }
+        None
     }
 }
 
@@ -95,11 +90,10 @@ fn main() {
     let mut b = Board::new();
     let mut sign: char = 'X';
     let mut cell = Cell::new();
-
     loop {
         b.print_a_board();
 
-        eprintln!("Enter a cell number:");
+        eprint!("Enter a cell number:");
 
         let mut cell_index = String::new();
 
@@ -147,7 +141,9 @@ fn main() {
             _ => panic!("How de fuck you managed to break it?"),
         }
 
-        b.check_for_end();
+        if let Some(winer) = b.check_for_win() {
+            println!("{} won the game!", winer);
+            break;
+        }
     }
-    //TODO : make a check of win or tie situation
 }
