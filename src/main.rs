@@ -70,9 +70,18 @@ impl Board {
         }
     }
     fn check_for_win(&mut self) -> Option<char> {
+        //check for a horizontal win
         for row in self.board.iter() {
             if !row.iter().any(|i| *i == '\u{25A2}') && row.iter().all(|&x| x == row[0]) {
                 return Some(row[0]);
+            }
+        }
+        //check for a vertical win
+        for (i, enumerator) in self.board.iter().enumerate() {
+            if !self.board.iter().any(|row| row[i] == '\u{25A2}')
+                && self.board.iter().all(|x| x[i] == enumerator[i])
+            {
+                return Some(enumerator[i]);
             }
         }
         None
@@ -142,6 +151,7 @@ fn main() {
         }
 
         if let Some(winer) = b.check_for_win() {
+            b.print_a_board();
             println!("{} won the game!", winer);
             break;
         }
