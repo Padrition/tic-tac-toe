@@ -35,6 +35,11 @@ impl Cell {
 }
 
 impl Board {
+    fn new() -> Board {
+        Board {
+            board: vec![vec!['\u{25A2}'; 3]; 3],
+        }
+    }
     fn print_a_board(&self) {
         for i in 0..3 {
             for j in 0..3 {
@@ -64,9 +69,17 @@ impl Board {
             None => Err(ErrBoard::OutOfBounds),
         }
     }
-    fn new() -> Board {
-        Board {
-            board: vec![vec!['\u{25A2}'; 3]; 3],
+    fn check_for_end(&mut self){
+        for row in self.board.iter(){
+            if row.iter().any(|&i| i == '\u{25A2}'){
+                break;
+            }
+            for i in 0..row.len(){
+                if row[0] != row[i]{
+                    break;
+                }
+            }
+            println!("One value in a row!");
         }
     }
 }
@@ -133,5 +146,8 @@ fn main() {
             },
             _ => panic!("How de fuck you managed to break it?"),
         }
+
+        b.check_for_end();
     }
+    //TODO : make a check of win or tie situation
 }
