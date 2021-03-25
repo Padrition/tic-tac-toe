@@ -118,7 +118,14 @@ impl Board {
                 return Some(enumerator[i]);
             }
         }
-
+        //ceck for a tie
+        if self
+            .board
+            .iter()
+            .all(|x| x.iter().all(|&y| y != '\u{25A2}'))
+        {
+            println!("It's a tie!");
+        }
         None
     }
 }
