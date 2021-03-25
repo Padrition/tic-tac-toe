@@ -100,6 +100,24 @@ impl Board {
                 return Some(enumerator[i]);
             }
         }
+        //check for a diagonal (lower left to upper right) win
+        for (i, enumerator) in self.board.iter().enumerate().rev() {
+            if !self
+                .board
+                .iter()
+                .rev()
+                .enumerate()
+                .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
+                && self
+                    .board
+                    .iter()
+                    .rev()
+                    .enumerate()
+                    .any(|(i_inner, row)| row[i_inner] == enumerator[i])
+            {
+                return Some(enumerator[i]);
+            }
+        }
         None
     }
 }
