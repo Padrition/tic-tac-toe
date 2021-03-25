@@ -101,7 +101,7 @@ impl Board {
             }
         }
         //check for a diagonal (lower left to upper right) win
-        for (i, enumerator) in self.board.iter().enumerate().rev() {
+        for (i, enumerator) in self.board.iter().rev().enumerate() {
             if !self
                 .board
                 .iter()
@@ -113,11 +113,12 @@ impl Board {
                     .iter()
                     .rev()
                     .enumerate()
-                    .any(|(i_inner, row)| row[i_inner] == enumerator[i])
+                    .all(|(i_inner, row)| row[i_inner] == enumerator[i])
             {
                 return Some(enumerator[i]);
             }
         }
+
         None
     }
 }
