@@ -124,7 +124,7 @@ impl Board {
             .iter()
             .all(|x| x.iter().all(|&y| y != '\u{25A2}'))
         {
-            println!("It's a tie!");
+            return Some('T');
         }
         None
     }
@@ -194,6 +194,10 @@ fn main() {
 
         if let Some(winer) = b.check_for_win() {
             b.print_a_board();
+            if winer == 'T'{
+                println!("It's a tie!");
+                break;
+            }
             println!("{} won the game!", winer);
             break;
         }
