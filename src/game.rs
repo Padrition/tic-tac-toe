@@ -68,59 +68,85 @@ impl Board {
         }
     }
     pub fn check_for_win(&mut self) -> Option<char> {
-        //check for a horizontal win
+        if let Some(win) =  self.horizontal_win(){
+            return Some(win);
+        };
+        if let Some(win) = self.vertical_win(){
+            return Some(win);
+        };
+        if let Some(win) = self.upleft_downright_diagonal_win(){
+            return Some(win);
+        };
+        if let Some(win) = self.downleft_upright_diagonal_win(){
+            return Some(win);
+        };
+        if let Some(win) = self.tie_check(){
+            return Some(win);
+        };
+
+        None
+    }
+    fn horizontal_win(&self) -> Option<char>{
         for row in self.board.iter() {
             if !row.iter().any(|i| *i == '\u{25A2}') && row.iter().all(|&x| x == row[0]) {
                 return Some(row[0]);
             }
         }
-        //check for a vertical win
+        None
+    }
+    fn vertical_win(&self) -> Option<char>{
         for (i, enumerator) in self.board.iter().enumerate() {
             if !self.board.iter().any(|row| row[i] == '\u{25A2}')
-                && self.board.iter().all(|x| x[i] == enumerator[i])
+            && self.board.iter().all(|x| x[i] == enumerator[i])
             {
                 return Some(enumerator[i]);
             }
         }
-        //check for a diagonal(upper left to lower right) win
+        None
+    }
+    fn upleft_downright_diagonal_win(&self) -> Option<char> {
         for (i, enumerator) in self.board.iter().enumerate() {
             if !self
-                .board
-                .iter()
-                .enumerate()
-                .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
-                && self
-                    .board
-                    .iter()
-                    .enumerate()
-                    .all(|(i_iner, row)| row[i_iner] == enumerator[i])
-            {
-                return Some(enumerator[i]);
-            }
-        }
-        //check for a diagonal (lower left to upper right) win
-        for (i, enumerator) in self.board.iter().rev().enumerate() {
-            if !self
-                .board
-                .iter()
-                .rev()
-                .enumerate()
-                .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
-                && self
-                    .board
-                    .iter()
-                    .rev()
-                    .enumerate()
-                    .all(|(i_inner, row)| row[i_inner] == enumerator[i])
-            {
-                return Some(enumerator[i]);
-            }
-        }
-        //ceck for a tie
-        if self
             .board
             .iter()
-            .all(|x| x.iter().all(|&y| y != '\u{25A2}'))
+            .enumerate()
+            .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
+            && self
+            .board
+            .iter()
+            .enumerate()
+            .all(|(i_iner, row)| row[i_iner] == enumerator[i])
+            {
+                return Some(enumerator[i]);
+            }
+        }
+        None
+    }
+    fn downleft_upright_diagonal_win(&self) -> Option<char> {
+        for (i, enumerator) in self.board.iter().rev().enumerate() {
+            if !self
+            .board
+            .iter()
+            .rev()
+            .enumerate()
+            .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
+            && self
+            .board
+            .iter()
+            .rev()
+            .enumerate()
+            .all(|(i_inner, row)| row[i_inner] == enumerator[i])
+            {
+                return Some(enumerator[i]);
+            }
+        }
+        None
+    }
+    fn tie_check(&self) -> Option<char> {
+        if self
+        .board
+        .iter()
+        .all(|x| x.iter().all(|&y| y != '\u{25A2}'))
         {
             return Some('T');
         }

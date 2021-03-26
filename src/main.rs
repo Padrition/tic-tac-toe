@@ -63,7 +63,7 @@ fn main() {
                     continue;
                 }
             },
-            _ => panic!("How de fuck you managed to break it?"),
+            _ => panic!("Unpresented player "),
         }
 
         if let Some(winer) = b.check_for_win() {
