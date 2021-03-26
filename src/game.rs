@@ -153,3 +153,50 @@ impl Board {
         None
     }
 }
+#[cfg(test)]
+mod tests{
+    use super::*;
+    #[test]
+    fn win_horizontal(){
+        let mut b = Board::new();
+        b.board[0] = vec!['X';3];
+        println!("{:?}", b.board);
+        assert_eq!(b.horizontal_win(), Some('X'));
+    }
+    #[test]
+    fn win_vertical() {
+        let mut b = Board::new();
+        b.board[0][0] = 'O';
+        b.board[1][0] = 'O';
+        b.board[2][0] = 'O';
+        println!("{:?}", b.board);
+        assert_eq!(b.vertical_win(), Some('O'));
+    }
+    #[test]
+    fn win_diagonal_upl_downr() {
+        let mut b = Board::new();
+        b.board[0][0] = 'X';
+        b.board[1][1] = 'X';
+        b.board[2][2] = 'X';
+        println!("{:?}", b.board);
+        assert_eq!(b.upleft_downright_diagonal_win(), Some('X'));
+    }
+    #[test]
+    fn win_diagonal_downl_upr() {
+        let mut b = Board::new();
+        b.board[0][2] = 'O';
+        b.board[1][1] = 'O';
+        b.board[2][0] = 'O';
+        println!("{:?}", b.board);
+        assert_eq!(b.downleft_upright_diagonal_win(), Some('O'));
+    }
+    #[test]
+    fn tie() {
+        let mut b = Board::new();
+        b.board[0] = vec!['O','X','O'];
+        b.board[1] = vec!['O','O','X'];
+        b.board[2] = vec!['X','X','O'];
+        println!("{:?}", b.board);
+        assert_eq!(b.tie_check(), Some('T'));
+    }
+}
