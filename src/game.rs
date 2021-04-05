@@ -8,7 +8,6 @@ pub struct Cell {
     x: usize,
     y: usize,
 }
-
 pub enum ErrCoordinates {
     InvalidSub,
 }
@@ -118,7 +117,7 @@ impl Board {
                     .board
                     .iter()
                     .enumerate()
-                    .all(|(i_iner, row)| row[i_iner] == enumerator[i])
+                    .all(|(i_inner, row)| row[i_inner] == enumerator[i])
             {
                 return Some(enumerator[i]);
             }
