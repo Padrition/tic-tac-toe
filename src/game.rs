@@ -1,3 +1,4 @@
+const BOARD_SIZE : usize = 3;
 pub struct Board {
     board: Vec<Vec<char>>,
 }
@@ -23,8 +24,8 @@ impl Cell {
         let i = i.checked_sub(1);
         match i {
             Some(u) => {
-                self.x = u / 3;
-                self.y = u % 3;
+                self.x = u / BOARD_SIZE;
+                self.y = u % BOARD_SIZE;
                 Ok(())
             }
             None => Err(ErrCoordinates::InvalidSub),
@@ -35,12 +36,12 @@ impl Cell {
 impl Board {
     pub fn new() -> Board {
         Board {
-            board: vec![vec!['\u{25A2}'; 3]; 3],
+            board: vec![vec!['\u{25A2}'; BOARD_SIZE]; BOARD_SIZE],
         }
     }
     pub fn print_a_board(&self) {
-        for i in 0..3 {
-            for j in 0..3 {
+        for i in 0..BOARD_SIZE {
+            for j in 0..BOARD_SIZE {
                 print!("{:2}", self.board[i][j]);
             }
             println!();
