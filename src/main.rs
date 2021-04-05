@@ -12,11 +12,11 @@ fn main() {
             \rIf you fill any row column or horizontal with your signs you win."
     );
 
-    let mut b = Board::new();
+    let mut board = Board::new();
     let mut sign: char = 'X';
     let mut cell = Cell::new();
     loop {
-        b.print_a_board();
+        board.print();
 
         eprint!("Enter a cell number:");
 
@@ -27,7 +27,7 @@ fn main() {
             .expect("Error reading the input!");
 
         match cell_index.trim().parse::<usize>() {
-            Ok(i) => match cell.index_to_coordinates(i) {
+            Ok(i) => match cell.from_index(i) {
                 Ok(a) => a,
                 Err(ErrCoordinates::InvalidSub) => {
                     eprintln!("Enter a valid number!");
@@ -41,7 +41,7 @@ fn main() {
         }
 
         match sign {
-            'X' => match b.place_a_sign(&mut cell, &mut sign) {
+            'X' => match board.sign(&mut cell, &mut sign) {
                 Ok(a) => a,
                 Err(ErrBoard::PossitionTaken) => {
                     eprintln!("This possition is already taken! Try another one!");
@@ -52,7 +52,7 @@ fn main() {
                     continue;
                 }
             },
-            'O' => match b.place_a_sign(&mut cell, &mut sign) {
+            'O' => match board.sign(&mut cell, &mut sign) {
                 Ok(a) => a,
                 Err(ErrBoard::PossitionTaken) => {
                     eprintln!("This possition is already taken! Try another one!");
@@ -66,8 +66,8 @@ fn main() {
             _ => panic!("Unpresented player "),
         }
 
-        if let Some(winer) = b.check_for_win() {
-            b.print_a_board();
+        if let Some(winer) = board.check_for_win() {
+            board.print();
             if winer == 'T' {
                 println!("It's a tie!");
                 break;

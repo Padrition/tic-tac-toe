@@ -1,4 +1,6 @@
-const BOARD_SIZE : usize = 3;
+const BOARD_SIZE: usize = 3;
+const VACANT_CELL: char = '\u{25A2}';
+
 pub struct Board {
     board: Vec<Vec<char>>,
 }
@@ -20,7 +22,7 @@ impl Cell {
     pub fn new() -> Cell {
         Cell { x: 0, y: 0 }
     }
-    pub fn index_to_coordinates(&mut self, i: usize) -> Result<(), ErrCoordinates> {
+    pub fn from_index(&mut self, i: usize) -> Result<(), ErrCoordinates> {
         let i = i.checked_sub(1);
         match i {
             Some(u) => {
@@ -36,10 +38,10 @@ impl Cell {
 impl Board {
     pub fn new() -> Board {
         Board {
-            board: vec![vec!['\u{25A2}'; BOARD_SIZE]; BOARD_SIZE],
+            board: vec![vec![VACANT_CELL; BOARD_SIZE]; BOARD_SIZE],
         }
     }
-    pub fn print_a_board(&self) {
+    pub fn print(&self) {
         for i in 0..BOARD_SIZE {
             for j in 0..BOARD_SIZE {
                 print!("{:2}", self.board[i][j]);
@@ -47,11 +49,11 @@ impl Board {
             println!();
         }
     }
-    pub fn place_a_sign(&mut self, cell: &mut Cell, sign: &mut char) -> Result<(), ErrBoard> {
+    pub fn sign(&mut self, cell: &mut Cell, sign: &mut char) -> Result<(), ErrBoard> {
         match self.board.get(cell.x) {
             Some(_) => match self.board[cell.x].get(cell.y) {
                 Some(_) => {
-                    if self.board[cell.x][cell.y] == '\u{25A2}' {
+                    if self.board[cell.x][cell.y] == VACANT_CELL {
                         self.board[cell.x][cell.y] = *sign;
                         if *sign == 'X' {
                             *sign = 'O';
@@ -69,36 +71,36 @@ impl Board {
         }
     }
     pub fn check_for_win(&mut self) -> Option<char> {
-        if let Some(win) =  self.horizontal_win(){
+        if let Some(win) = self.horizontal_win() {
             return Some(win);
         };
-        if let Some(win) = self.vertical_win(){
+        if let Some(win) = self.vertical_win() {
             return Some(win);
         };
-        if let Some(win) = self.upleft_downright_diagonal_win(){
+        if let Some(win) = self.upleft_downright_diagonal_win() {
             return Some(win);
         };
-        if let Some(win) = self.downleft_upright_diagonal_win(){
+        if let Some(win) = self.downleft_upright_diagonal_win() {
             return Some(win);
         };
-        if let Some(win) = self.tie_check(){
+        if let Some(win) = self.tie_check() {
             return Some(win);
         };
 
         None
     }
-    fn horizontal_win(&self) -> Option<char>{
+    fn horizontal_win(&self) -> Option<char> {
         for row in self.board.iter() {
-            if !row.iter().any(|i| *i == '\u{25A2}') && row.iter().all(|&x| x == row[0]) {
+            if !row.iter().any(|i| *i == VACANT_CELL) && row.iter().all(|&x| x == row[0]) {
                 return Some(row[0]);
             }
         }
         None
     }
-    fn vertical_win(&self) -> Option<char>{
+    fn vertical_win(&self) -> Option<char> {
         for (i, enumerator) in self.board.iter().enumerate() {
-            if !self.board.iter().any(|row| row[i] == '\u{25A2}')
-            && self.board.iter().all(|x| x[i] == enumerator[i])
+            if !self.board.iter().any(|row| row[i] == VACANT_CELL)
+                && self.board.iter().all(|x| x[i] == enumerator[i])
             {
                 return Some(enumerator[i]);
             }
@@ -108,15 +110,15 @@ impl Board {
     fn upleft_downright_diagonal_win(&self) -> Option<char> {
         for (i, enumerator) in self.board.iter().enumerate() {
             if !self
-            .board
-            .iter()
-            .enumerate()
-            .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
-            && self
-            .board
-            .iter()
-            .enumerate()
-            .all(|(i_iner, row)| row[i_iner] == enumerator[i])
+                .board
+                .iter()
+                .enumerate()
+                .any(|(i_inner, row)| row[i_inner] == VACANT_CELL)
+                && self
+                    .board
+                    .iter()
+                    .enumerate()
+                    .all(|(i_iner, row)| row[i_iner] == enumerator[i])
             {
                 return Some(enumerator[i]);
             }
@@ -126,17 +128,17 @@ impl Board {
     fn downleft_upright_diagonal_win(&self) -> Option<char> {
         for (i, enumerator) in self.board.iter().rev().enumerate() {
             if !self
-            .board
-            .iter()
-            .rev()
-            .enumerate()
-            .any(|(i_inner, row)| row[i_inner] == '\u{25A2}')
-            && self
-            .board
-            .iter()
-            .rev()
-            .enumerate()
-            .all(|(i_inner, row)| row[i_inner] == enumerator[i])
+                .board
+                .iter()
+                .rev()
+                .enumerate()
+                .any(|(i_inner, row)| row[i_inner] == VACANT_CELL)
+                && self
+                    .board
+                    .iter()
+                    .rev()
+                    .enumerate()
+                    .all(|(i_inner, row)| row[i_inner] == enumerator[i])
             {
                 return Some(enumerator[i]);
             }
@@ -145,9 +147,9 @@ impl Board {
     }
     fn tie_check(&self) -> Option<char> {
         if self
-        .board
-        .iter()
-        .all(|x| x.iter().all(|&y| y != '\u{25A2}'))
+            .board
+            .iter()
+            .all(|x| x.iter().all(|&y| y != VACANT_CELL))
         {
             return Some('T');
         }
@@ -155,12 +157,12 @@ impl Board {
     }
 }
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::*;
     #[test]
-    fn win_horizontal(){
+    fn win_horizontal() {
         let mut b = Board::new();
-        b.board[0] = vec!['X';3];
+        b.board[0] = vec!['X'; 3];
         println!("{:?}", b.board);
         assert_eq!(b.horizontal_win(), Some('X'));
     }
@@ -194,9 +196,9 @@ mod tests{
     #[test]
     fn tie() {
         let mut b = Board::new();
-        b.board[0] = vec!['O','X','O'];
-        b.board[1] = vec!['O','O','X'];
-        b.board[2] = vec!['X','X','O'];
+        b.board[0] = vec!['O', 'X', 'O'];
+        b.board[1] = vec!['O', 'O', 'X'];
+        b.board[2] = vec!['X', 'X', 'O'];
         println!("{:?}", b.board);
         assert_eq!(b.tie_check(), Some('T'));
     }
