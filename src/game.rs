@@ -15,7 +15,7 @@ pub enum ErrCoordinates {
 
 pub enum ErrBoard {
     OutOfBounds,
-    PossitionTaken,
+    PositionTaken,
 }
 
 impl Cell {
@@ -61,7 +61,7 @@ impl Board {
                             *sign = 'X';
                         }
                     } else {
-                        return Err(ErrBoard::PossitionTaken);
+                        return Err(ErrBoard::PositionTaken);
                     }
                     Ok(())
                 }

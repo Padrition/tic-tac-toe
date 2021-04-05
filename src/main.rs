@@ -7,7 +7,7 @@ use game::*;
 fn main() {
     println!("\tTIC-TAC-TOE");
     println!(
-        "The rulse:
+        "The rules:
             \rEvery turn you asked where you want to place your sign(O or X).
             \rIf you fill any row column or horizontal with your signs you win."
     );
@@ -43,8 +43,8 @@ fn main() {
         match sign {
             'X' => match board.sign(&mut cell, &mut sign) {
                 Ok(a) => a,
-                Err(ErrBoard::PossitionTaken) => {
-                    eprintln!("This possition is already taken! Try another one!");
+                Err(ErrBoard::PositionTaken) => {
+                    eprintln!("This position is already taken! Try another one!");
                     continue;
                 }
                 Err(ErrBoard::OutOfBounds) => {
@@ -54,8 +54,8 @@ fn main() {
             },
             'O' => match board.sign(&mut cell, &mut sign) {
                 Ok(a) => a,
-                Err(ErrBoard::PossitionTaken) => {
-                    eprintln!("This possition is already taken! Try another one!");
+                Err(ErrBoard::PositionTaken) => {
+                    eprintln!("This position is already taken! Try another one!");
                     continue;
                 }
                 Err(ErrBoard::OutOfBounds) => {
@@ -63,16 +63,16 @@ fn main() {
                     continue;
                 }
             },
-            _ => panic!("Unpresented player "),
+            _ => panic!("Unrepresented player "),
         }
 
-        if let Some(winer) = board.check_for_win() {
+        if let Some(winner) = board.check_for_win() {
             board.print();
-            if winer == 'T' {
+            if winner == 'T' {
                 println!("It's a tie!");
                 break;
             }
-            println!("{} won the game!", winer);
+            println!("{} won the game!", winner);
             break;
         }
     }
